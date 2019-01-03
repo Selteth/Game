@@ -23,7 +23,7 @@ public class MovementControl : MonoBehaviour
     // Instead of creating special GameObject on those sides, we need, we should better use a vector math. 
     // It is becouse our player object will rotate in the jump.
     private float downVectorLength = 0f;
-    public float downVectorCoef = 0.55f;
+    public float downVectorAdditionalCoef = 0.05f;
     // Whether the player is on the ground
     private bool isGrounded = false;
     // Whether the player should jump
@@ -41,10 +41,12 @@ public class MovementControl : MonoBehaviour
     // Used new to disable warning about hiding base member
     private new Rigidbody2D rigidbody;
 
+
     void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
-        downVectorLength = GetComponent<BoxCollider2D>().size.x * gameObject.transform.localScale.x * downVectorCoef;
+        downVectorLength = GetComponent<BoxCollider2D>().size.x * gameObject.transform.localScale.x / 2;
+
     }
 
     void Update()
@@ -53,6 +55,7 @@ public class MovementControl : MonoBehaviour
         HandleVerticalInput();
         if (isGrounded)
             isRotating = false;
+
     }
 
     void FixedUpdate()
@@ -83,6 +86,27 @@ public class MovementControl : MonoBehaviour
         return isGrounded;
     }
 
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        // If player is on the ground...
+        if (other.gameObject.layer==LayerMask.NameToLayer("Ground"))
+        {
+            // ...then he might jump again
+            isGrounded = true;
+            /* Reset rising up variables */
+            isJumping = false;
+            jumpTimeCounter = 0f;
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        {
+            isGrounded = false; 
+        }
+    }
+
     // Handles player input that belongs to jumps
     private void HandleVerticalInput()
     {
@@ -100,21 +124,7 @@ public class MovementControl : MonoBehaviour
             isJumping = false;
         }
 
-        // If player is on the ground...
-        if (Physics2D.Linecast(
-                transform.position,
-                new Vector2(transform.position.x, transform.position.y - downVectorLength),
-                1 << LayerMask.NameToLayer("Ground"))
-                )
-        {
-            // ...then he might jump again
-            isGrounded = true;
-            /* Reset rising up variables */
-            isJumping = false;
-            jumpTimeCounter = 0f;
-        }
-        else
-            isGrounded = false;
+        
     }
 
     // Handles horizontal movement
