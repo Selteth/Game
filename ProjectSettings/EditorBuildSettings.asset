@@ -5,19 +5,5 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Level.unity
-    guid: 69575e6f2904c4c7dafafe28c5ec7068
-  - enabled: 1
-    path: Assets/Scenes/GameMenu.unity
-    guid: a708888026512f1459cb5b8848a7ab38
-  - enabled: 1
-    path: Assets/Scenes/SpriteLevel.unity
-    guid: 2b3a32c0e21a6f048955a722f2100456
-  - enabled: 1
-    path: Assets/Scenes/HowToPlayRunner.unity
-    guid: a3951c1ed8d2a204ca1b30faed221604
-  - enabled: 1
-    path: Assets/Scenes/LooseScene.unity
-    guid: 4b8e48e2061422642a3c197731b858ff
-  m_configObjects: {}
