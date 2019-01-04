@@ -13,7 +13,6 @@ public class Explosion : MonoBehaviour {
     
     void Awake()
     {
-        
         radIncPerSec = maxRadius / summTime;
     }
 	
