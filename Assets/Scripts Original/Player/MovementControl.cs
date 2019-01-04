@@ -88,7 +88,7 @@ public class MovementControl : MonoBehaviour
         collider.GetContacts(cpa);
         // If player is on the ground...
         if (collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
-            if (Array.TrueForAll<ContactPoint2D>(cpa, (ContactPoint2D x) => x.point.y < gameObject.transform.position.y ))
+            if (Array.Exists<ContactPoint2D>(cpa, (ContactPoint2D x) => x.point.y < gameObject.transform.position.y ))
         {
             // ...then he might jump again
             isGrounded = true;
@@ -97,12 +97,35 @@ public class MovementControl : MonoBehaviour
             jumpTimeCounter = 0f;
         }
     }
+    //                       _         _
+    //sometimes it is needed  \_(-_-)_/ 
+    void OnCollisionStay2D(Collision2D collider)
+    {
+        
+        if (!isGrounded)
+        {
+            ContactPoint2D[] cpa = new ContactPoint2D[collider.contactCount];
+            collider.GetContacts(cpa);
+
+            if (collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+                if (Array.Exists<ContactPoint2D>(cpa, (ContactPoint2D x) => x.point.y < gameObject.transform.position.y))
+                {
+                    // ...then he might jump again
+                    isGrounded = true;
+                }
+        }
+    }
 
     void OnCollisionExit2D(Collision2D collider)
     {
+        ContactPoint2D[] cpa = new ContactPoint2D[collider.contactCount];
+        collider.GetContacts(cpa);
+
+
         if (collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            if (!Array.Exists<ContactPoint2D>(cpa, (ContactPoint2D x) => x.point.y < gameObject.transform.position.y))
         {
-            isGrounded = false; 
+                isGrounded = false; 
         }
     }
 
@@ -162,10 +185,7 @@ public class MovementControl : MonoBehaviour
     {
         if (!isGrounded && !isRotating)
         {
-            rigidbody.AddForceAtPosition(
-                new Vector2(transform.position.x+1, transform.position.y), 
-                Vector2.left*angleRotatingImpulse*(horizontalAxis>0?(horizontalAxis<0?0:1):-1)
-                );
+            rigidbody.AddTorque(angleRotatingImpulse*horizontalAxis*-1);
             isRotating = true;
         }
     }
