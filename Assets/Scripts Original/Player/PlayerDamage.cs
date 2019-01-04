@@ -19,6 +19,11 @@ public class PlayerDamage : Damage
 
     protected override void Die(GameObject damager)
     {
+        Die();
+    }
+
+    private void Die()
+    {
         Respawn();
     }
 
@@ -35,4 +40,11 @@ public class PlayerDamage : Damage
         currentLifeCount = lifeCount;
     }
 
+
+    public void OnTriggerExit2D(Collider2D collider)
+    {
+
+        if (collider.tag == "LevelBound")
+            Die();
+    }
 }

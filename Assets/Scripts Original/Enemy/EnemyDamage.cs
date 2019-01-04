@@ -14,8 +14,14 @@ public class EnemyDamage : Damage
 
     protected override void Die(GameObject killer)
     {
-        Destroy(gameObject);
+        Die();
+        //Destroy(gameObject);
         PushGameObject(killer);
+    }
+
+    private void Die()
+    {
+        Destroy(gameObject);
     }
 
     protected override void RespondToDamage(GameObject damager)
@@ -30,4 +36,11 @@ public class EnemyDamage : Damage
         gameObjectRigidbody.velocity = new Vector2(gameObjectRigidbody.velocity.x, killImpulseSpeed);
     }
 
+
+    public void OnTriggerExit2D(Collider2D collider)
+    {
+
+        if (collider.tag == "LevelBound")
+            Die();
+    }
 }
