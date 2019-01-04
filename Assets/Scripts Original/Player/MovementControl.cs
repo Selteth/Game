@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class MovementControl : MonoBehaviour
@@ -20,10 +21,6 @@ public class MovementControl : MonoBehaviour
     // Maximum time counter
     private float jumpTimeCounter = 0f;
     
-    // Instead of creating special GameObject on those sides, we need, we should better use a vector math. 
-    // It is becouse our player object will rotate in the jump.
-    private float downVectorLength = 0f;
-    public float downVectorAdditionalCoef = 0.05f;
     // Whether the player is on the ground
     private bool isGrounded = false;
     // Whether the player should jump
@@ -45,7 +42,6 @@ public class MovementControl : MonoBehaviour
     void Awake()
     {
         rigidbody = GetComponent<Rigidbody2D>();
-        downVectorLength = GetComponent<BoxCollider2D>().size.x * gameObject.transform.localScale.x / 2;
 
     }
 
@@ -86,10 +82,13 @@ public class MovementControl : MonoBehaviour
         return isGrounded;
     }
 
-    void OnCollisionEnter2D(Collision2D other)
+    void OnCollisionEnter2D(Collision2D collider)
     {
+        ContactPoint2D[] cpa = new ContactPoint2D[collider.contactCount];
+        collider.GetContacts(cpa);
         // If player is on the ground...
-        if (other.gameObject.layer==LayerMask.NameToLayer("Ground"))
+        if (collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            if (Array.TrueForAll<ContactPoint2D>(cpa, (ContactPoint2D x) => x.point.y < gameObject.transform.position.y ))
         {
             // ...then he might jump again
             isGrounded = true;
@@ -99,9 +98,9 @@ public class MovementControl : MonoBehaviour
         }
     }
 
-    void OnCollisionExit2D(Collision2D other)
+    void OnCollisionExit2D(Collision2D collider)
     {
-        if (other.gameObject.layer == LayerMask.NameToLayer("Ground"))
+        if (collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
         {
             isGrounded = false; 
         }
